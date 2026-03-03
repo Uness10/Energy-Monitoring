@@ -1,0 +1,7 @@
+node_id: "workstation-01"
+node_type: "workstation"
+backend_url: "http://localhost:8000/api/v1/metrics"
+api_key: "sk-xxxxxxxxxxxxxxxxxxxx"
+collection_interval_seconds: 10
+retry_interval_seconds: 30
+buffer_max_records: 3600
