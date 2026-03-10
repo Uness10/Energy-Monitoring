@@ -96,3 +96,9 @@ CREATE TABLE IF NOT EXISTS energy_monitoring.nodes (
     registered      DateTime DEFAULT now()
 ) ENGINE = ReplicatedMergeTree('/clickhouse/tables/nodes', '{replica}')
 ORDER BY node_id;
+
+-- ─────────────────────────────────────────────────────────
+-- Seed: default daemon node with a known API key
+-- ─────────────────────────────────────────────────────────
+INSERT INTO energy_monitoring.nodes (node_id, node_type, api_key, description)
+VALUES ('workstation-01', 'workstation', 'sk-daemon-default-key-2026', 'Default workstation daemon node');

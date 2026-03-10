@@ -1,0 +1,141 @@
+2026-03-10 12:00:37,478 [INFO] Daemon started
+2026-03-10 12:00:37,491 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:00:37.483180', 'cpu_utilization': 70.1, 'cpu_frequency': 2396.0, 'ram_utilization': 79.0, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:00:37,496 [INFO] Heartbeat sent successfully
+2026-03-10 12:00:47,532 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:00:47.502688', 'cpu_utilization': 35.4, 'cpu_frequency': 2396.0, 'ram_utilization': 78.9, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:00:47,536 [INFO] Heartbeat sent successfully
+2026-03-10 12:00:57,561 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:00:57.542293', 'cpu_utilization': 27.1, 'cpu_frequency': 2396.0, 'ram_utilization': 78.2, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:00:57,565 [INFO] Heartbeat sent successfully
+2026-03-10 12:01:07,593 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:01:07.569990', 'cpu_utilization': 20.2, 'cpu_frequency': 2396.0, 'ram_utilization': 78.0, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:01:07,599 [INFO] Heartbeat sent successfully
+2026-03-10 12:01:17,635 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:01:17.608583', 'cpu_utilization': 18.5, 'cpu_frequency': 2396.0, 'ram_utilization': 78.1, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:01:17,639 [INFO] Heartbeat sent successfully
+2026-03-10 12:01:27,673 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:01:27.657724', 'cpu_utilization': 26.7, 'cpu_frequency': 2396.0, 'ram_utilization': 78.3, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:01:27,681 [INFO] Heartbeat sent successfully
+2026-03-10 12:01:37,691 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:01:37.686389', 'cpu_utilization': 28.2, 'cpu_frequency': 2396.0, 'ram_utilization': 78.2, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:01:37,694 [INFO] Heartbeat sent successfully
+2026-03-10 12:01:47,739 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:01:47.712327', 'cpu_utilization': 24.5, 'cpu_frequency': 2396.0, 'ram_utilization': 78.7, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:01:47,748 [INFO] Heartbeat sent successfully
+2026-03-10 12:01:57,770 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:01:57.758582', 'cpu_utilization': 48.4, 'cpu_frequency': 2396.0, 'ram_utilization': 79.4, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:01:57,782 [INFO] Heartbeat sent successfully
+2026-03-10 12:02:07,791 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:02:07.787922', 'cpu_utilization': 35.7, 'cpu_frequency': 2396.0, 'ram_utilization': 78.9, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:02:07,807 [INFO] Heartbeat sent successfully
+2026-03-10 12:02:17,830 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:02:17.815158', 'cpu_utilization': 37.8, 'cpu_frequency': 2396.0, 'ram_utilization': 78.6, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:02:17,839 [INFO] Heartbeat sent successfully
+2026-03-10 12:02:27,851 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:02:27.845842', 'cpu_utilization': 29.3, 'cpu_frequency': 2396.0, 'ram_utilization': 78.4, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:02:27,856 [INFO] Heartbeat sent successfully
+2026-03-10 12:02:37,893 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:02:37.865130', 'cpu_utilization': 37.0, 'cpu_frequency': 2396.0, 'ram_utilization': 79.3, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:02:37,910 [INFO] Heartbeat sent successfully
+2026-03-10 12:02:47,931 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:02:47.915723', 'cpu_utilization': 39.1, 'cpu_frequency': 2396.0, 'ram_utilization': 79.9, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:02:47,936 [INFO] Heartbeat sent successfully
+2026-03-10 12:02:57,945 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:02:57.941410', 'cpu_utilization': 36.0, 'cpu_frequency': 2396.0, 'ram_utilization': 80.0, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:02:57,949 [INFO] Heartbeat sent successfully
+2026-03-10 12:03:07,978 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:03:07.967114', 'cpu_utilization': 22.4, 'cpu_frequency': 2396.0, 'ram_utilization': 79.6, 'power_watts': None, 'battery_level': 89}
+2026-03-10 12:03:07,985 [INFO] Heartbeat sent successfully
+2026-03-10 12:03:17,997 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:03:17.990770', 'cpu_utilization': 21.6, 'cpu_frequency': 2396.0, 'ram_utilization': 79.5, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:03:18,006 [INFO] Heartbeat sent successfully
+2026-03-10 12:03:28,016 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:03:28.012013', 'cpu_utilization': 29.7, 'cpu_frequency': 2396.0, 'ram_utilization': 79.6, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:03:28,020 [INFO] Heartbeat sent successfully
+2026-03-10 12:03:38,028 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:03:38.024527', 'cpu_utilization': 48.0, 'cpu_frequency': 2396.0, 'ram_utilization': 80.4, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:03:38,035 [INFO] Heartbeat sent successfully
+2026-03-10 12:03:48,065 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:03:48.048925', 'cpu_utilization': 56.6, 'cpu_frequency': 2396.0, 'ram_utilization': 80.7, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:03:48,115 [INFO] Heartbeat sent successfully
+2026-03-10 12:03:58,155 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:03:58.144446', 'cpu_utilization': 54.5, 'cpu_frequency': 2396.0, 'ram_utilization': 80.2, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:03:58,186 [INFO] Heartbeat sent successfully
+2026-03-10 12:04:08,207 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:04:08.198724', 'cpu_utilization': 56.0, 'cpu_frequency': 2396.0, 'ram_utilization': 80.2, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:04:08,212 [INFO] Heartbeat sent successfully
+2026-03-10 12:04:18,243 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:04:18.235376', 'cpu_utilization': 49.7, 'cpu_frequency': 2396.0, 'ram_utilization': 79.6, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:04:18,268 [INFO] Heartbeat sent successfully
+2026-03-10 12:04:28,282 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:04:28.276696', 'cpu_utilization': 49.1, 'cpu_frequency': 2396.0, 'ram_utilization': 79.5, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:04:28,288 [INFO] Heartbeat sent successfully
+2026-03-10 12:04:38,318 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:04:38.310727', 'cpu_utilization': 50.7, 'cpu_frequency': 2396.0, 'ram_utilization': 80.7, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:04:38,326 [INFO] Heartbeat sent successfully
+2026-03-10 12:04:48,340 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:04:48.334572', 'cpu_utilization': 50.3, 'cpu_frequency': 2396.0, 'ram_utilization': 80.9, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:04:48,348 [INFO] Heartbeat sent successfully
+2026-03-10 12:04:58,379 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:04:58.368300', 'cpu_utilization': 50.4, 'cpu_frequency': 2396.0, 'ram_utilization': 80.6, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:04:58,384 [INFO] Heartbeat sent successfully
+2026-03-10 12:05:08,414 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:05:08.391282', 'cpu_utilization': 32.8, 'cpu_frequency': 2396.0, 'ram_utilization': 80.6, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:05:08,421 [INFO] Heartbeat sent successfully
+2026-03-10 12:05:18,437 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:05:18.429784', 'cpu_utilization': 52.5, 'cpu_frequency': 2396.0, 'ram_utilization': 79.5, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:05:18,442 [INFO] Heartbeat sent successfully
+2026-03-10 12:05:28,479 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:05:28.459218', 'cpu_utilization': 44.1, 'cpu_frequency': 2396.0, 'ram_utilization': 79.5, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:05:28,495 [INFO] Heartbeat sent successfully
+2026-03-10 12:05:38,518 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:05:38.507297', 'cpu_utilization': 35.2, 'cpu_frequency': 2396.0, 'ram_utilization': 79.6, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:05:38,525 [INFO] Heartbeat sent successfully
+2026-03-10 12:05:48,561 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:05:48.545142', 'cpu_utilization': 27.7, 'cpu_frequency': 2396.0, 'ram_utilization': 79.3, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:05:48,569 [INFO] Heartbeat sent successfully
+2026-03-10 12:05:58,599 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:05:58.587168', 'cpu_utilization': 22.9, 'cpu_frequency': 2396.0, 'ram_utilization': 79.2, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:05:58,605 [INFO] Heartbeat sent successfully
+2026-03-10 12:06:08,649 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:06:08.622464', 'cpu_utilization': 29.6, 'cpu_frequency': 2396.0, 'ram_utilization': 78.8, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:06:08,653 [INFO] Heartbeat sent successfully
+2026-03-10 12:06:18,681 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:06:18.670976', 'cpu_utilization': 20.7, 'cpu_frequency': 2396.0, 'ram_utilization': 79.0, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:06:18,687 [INFO] Heartbeat sent successfully
+2026-03-10 12:06:28,717 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:06:28.693181', 'cpu_utilization': 25.9, 'cpu_frequency': 2396.0, 'ram_utilization': 78.8, 'power_watts': None, 'battery_level': 90}
+2026-03-10 12:06:28,723 [INFO] Heartbeat sent successfully
+2026-03-10 12:06:38,775 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:06:38.741289', 'cpu_utilization': 29.6, 'cpu_frequency': 2396.0, 'ram_utilization': 79.0, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:06:38,784 [INFO] Heartbeat sent successfully
+2026-03-10 12:06:48,822 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:06:48.798439', 'cpu_utilization': 24.6, 'cpu_frequency': 2396.0, 'ram_utilization': 78.8, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:06:48,829 [INFO] Heartbeat sent successfully
+2026-03-10 12:06:58,852 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:06:58.843759', 'cpu_utilization': 24.8, 'cpu_frequency': 2396.0, 'ram_utilization': 78.2, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:06:58,872 [INFO] Heartbeat sent successfully
+2026-03-10 12:07:08,898 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:07:08.887919', 'cpu_utilization': 30.9, 'cpu_frequency': 2396.0, 'ram_utilization': 78.5, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:07:08,904 [INFO] Heartbeat sent successfully
+2026-03-10 12:07:18,935 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:07:18.925203', 'cpu_utilization': 41.7, 'cpu_frequency': 2396.0, 'ram_utilization': 78.8, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:07:18,942 [INFO] Heartbeat sent successfully
+2026-03-10 12:07:28,962 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:07:28.947805', 'cpu_utilization': 55.7, 'cpu_frequency': 2396.0, 'ram_utilization': 79.2, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:07:28,994 [INFO] Heartbeat sent successfully
+2026-03-10 12:07:39,027 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:07:39.012920', 'cpu_utilization': 33.7, 'cpu_frequency': 2396.0, 'ram_utilization': 79.3, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:07:39,053 [INFO] Heartbeat sent successfully
+2026-03-10 12:07:49,083 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:07:49.058025', 'cpu_utilization': 28.4, 'cpu_frequency': 2396.0, 'ram_utilization': 78.8, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:07:49,101 [INFO] Heartbeat sent successfully
+2026-03-10 12:07:59,113 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:07:59.107196', 'cpu_utilization': 43.3, 'cpu_frequency': 2396.0, 'ram_utilization': 79.0, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:07:59,118 [INFO] Heartbeat sent successfully
+2026-03-10 12:08:09,144 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:08:09.135484', 'cpu_utilization': 44.2, 'cpu_frequency': 2396.0, 'ram_utilization': 79.4, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:08:09,151 [INFO] Heartbeat sent successfully
+2026-03-10 12:08:19,178 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:08:19.169327', 'cpu_utilization': 27.0, 'cpu_frequency': 2396.0, 'ram_utilization': 79.3, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:08:19,184 [INFO] Heartbeat sent successfully
+2026-03-10 12:08:29,241 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:08:29.202578', 'cpu_utilization': 26.7, 'cpu_frequency': 2396.0, 'ram_utilization': 79.0, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:08:29,249 [INFO] Heartbeat sent successfully
+2026-03-10 12:08:39,259 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:08:39.255159', 'cpu_utilization': 30.3, 'cpu_frequency': 2396.0, 'ram_utilization': 79.6, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:08:39,262 [INFO] Heartbeat sent successfully
+2026-03-10 12:08:49,292 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:08:49.279435', 'cpu_utilization': 21.9, 'cpu_frequency': 2396.0, 'ram_utilization': 79.5, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:08:49,312 [INFO] Heartbeat sent successfully
+2026-03-10 12:08:59,369 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:08:59.330312', 'cpu_utilization': 25.3, 'cpu_frequency': 2396.0, 'ram_utilization': 79.4, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:08:59,393 [INFO] Heartbeat sent successfully
+2026-03-10 12:09:09,448 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:09:09.413601', 'cpu_utilization': 21.9, 'cpu_frequency': 2396.0, 'ram_utilization': 79.2, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:09:09,455 [INFO] Heartbeat sent successfully
+2026-03-10 12:09:19,484 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:09:19.472544', 'cpu_utilization': 25.7, 'cpu_frequency': 2396.0, 'ram_utilization': 79.4, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:09:19,490 [INFO] Heartbeat sent successfully
+2026-03-10 12:09:29,524 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:09:29.495882', 'cpu_utilization': 15.3, 'cpu_frequency': 2396.0, 'ram_utilization': 79.4, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:09:29,528 [INFO] Heartbeat sent successfully
+2026-03-10 12:09:39,581 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:09:39.549892', 'cpu_utilization': 23.7, 'cpu_frequency': 2396.0, 'ram_utilization': 79.6, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:09:39,603 [INFO] Heartbeat sent successfully
+2026-03-10 12:09:49,640 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:09:49.627460', 'cpu_utilization': 27.4, 'cpu_frequency': 2396.0, 'ram_utilization': 79.8, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:09:49,645 [INFO] Heartbeat sent successfully
+2026-03-10 12:09:59,666 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:09:59.659881', 'cpu_utilization': 51.3, 'cpu_frequency': 2396.0, 'ram_utilization': 79.9, 'power_watts': None, 'battery_level': 91}
+2026-03-10 12:09:59,704 [INFO] Heartbeat sent successfully
+2026-03-10 12:10:09,718 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:10:09.710083', 'cpu_utilization': 43.0, 'cpu_frequency': 2396.0, 'ram_utilization': 80.5, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:10:09,723 [INFO] Heartbeat sent successfully
+2026-03-10 12:10:19,733 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:10:19.729676', 'cpu_utilization': 55.2, 'cpu_frequency': 2396.0, 'ram_utilization': 78.5, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:10:19,741 [INFO] Heartbeat sent successfully
+2026-03-10 12:10:29,811 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:10:29.749623', 'cpu_utilization': 72.4, 'cpu_frequency': 2396.0, 'ram_utilization': 81.8, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:10:29,820 [INFO] Heartbeat sent successfully
+2026-03-10 12:10:39,860 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:10:39.845740', 'cpu_utilization': 74.2, 'cpu_frequency': 2396.0, 'ram_utilization': 83.0, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:10:39,869 [INFO] Heartbeat sent successfully
+2026-03-10 12:10:49,910 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:10:49.878518', 'cpu_utilization': 48.0, 'cpu_frequency': 2396.0, 'ram_utilization': 81.8, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:10:49,917 [INFO] Heartbeat sent successfully
+2026-03-10 12:10:59,944 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:10:59.929263', 'cpu_utilization': 54.8, 'cpu_frequency': 2396.0, 'ram_utilization': 81.5, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:10:59,953 [INFO] Heartbeat sent successfully
+2026-03-10 12:11:09,988 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:11:09.978603', 'cpu_utilization': 47.7, 'cpu_frequency': 2396.0, 'ram_utilization': 81.4, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:11:09,996 [INFO] Heartbeat sent successfully
+2026-03-10 12:11:20,018 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:11:20.010636', 'cpu_utilization': 39.8, 'cpu_frequency': 2396.0, 'ram_utilization': 81.4, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:11:20,024 [INFO] Heartbeat sent successfully
+2026-03-10 12:11:30,042 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:11:30.032125', 'cpu_utilization': 43.2, 'cpu_frequency': 2396.0, 'ram_utilization': 81.3, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:11:30,048 [INFO] Heartbeat sent successfully
+2026-03-10 12:11:40,075 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:11:40.065086', 'cpu_utilization': 56.5, 'cpu_frequency': 2396.0, 'ram_utilization': 81.9, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:11:40,085 [INFO] Heartbeat sent successfully
+2026-03-10 12:11:50,104 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:11:50.094782', 'cpu_utilization': 45.9, 'cpu_frequency': 2396.0, 'ram_utilization': 81.4, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:11:50,109 [INFO] Heartbeat sent successfully
+2026-03-10 12:12:00,141 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:12:00.128791', 'cpu_utilization': 40.8, 'cpu_frequency': 2396.0, 'ram_utilization': 81.5, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:12:00,149 [INFO] Heartbeat sent successfully
+2026-03-10 12:12:10,164 [INFO] Metrics sent successfully: {'device_id': 'test-windows-node-01', 'device_type': 'workstation', 'timestamp': '2026-03-10T12:12:10.157027', 'cpu_utilization': 34.7, 'cpu_frequency': 2396.0, 'ram_utilization': 81.5, 'power_watts': None, 'battery_level': 92}
+2026-03-10 12:12:10,170 [INFO] Heartbeat sent successfully
