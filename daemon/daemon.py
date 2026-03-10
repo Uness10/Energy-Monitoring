@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""MLab Energy Monitoring Daemon — collects KPIs and sends them to the backend."""
+"""
+MLab Energy Monitoring Daemon
+Collects 8 system KPIs + per-application energy and sends them to the backend.
+"""
 
 import time
 import logging
@@ -13,6 +16,7 @@ from collectors.memory import get_ram_utilization
 from collectors.temperature import get_temperature
 from collectors.power import get_voltage, get_power_watts, get_energy_wh
 from collectors.uptime import get_uptime_seconds
+from collectors.app_energy import collect_app_energy
 from buffer import RetryBuffer
 
 logging.basicConfig(
@@ -28,28 +32,36 @@ def load_config() -> dict:
         return yaml.safe_load(f)
 
 
-def collect_metrics() -> dict:
+def collect_system_metrics() -> dict:
     return {
-        "voltage": get_voltage(),
-        "cpu_freq": get_cpu_frequency(),
-        "cpu_util": get_cpu_utilization(),
-        "ram_util": get_ram_utilization(),
+        "voltage":     get_voltage(),
+        "cpu_freq":    get_cpu_frequency(),
+        "cpu_util":    get_cpu_utilization(),
+        "ram_util":    get_ram_utilization(),
         "temperature": get_temperature(),
-        "power_w": get_power_watts(),
-        "energy_wh": get_energy_wh(),
-        "uptime_s": get_uptime_seconds(),
+        "power_w":     get_power_watts(),
+        "energy_wh":   get_energy_wh(),
+        "uptime_s":    get_uptime_seconds(),
     }
 
 
-def build_payload(config: dict, metrics: dict) -> dict:
-    return {
-        "node_id": config["node_id"],
+def build_payload(config: dict, metrics: dict, app_metrics: list) -> dict:
+    payload = {
+        "node_id":   config["node_id"],
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "metrics": metrics,
+        "metrics":   metrics,
     }
+    if app_metrics:
+        payload["app_metrics"] = app_metrics
+    return payload
 
 
-def send_payload(client: httpx.Client, url: str, api_key: str, payload: dict) -> bool:
+def send_payload(
+    client: httpx.Client,
+    url: str,
+    api_key: str,
+    payload: dict,
+) -> bool:
     try:
         resp = client.post(
             url,
@@ -58,17 +70,28 @@ def send_payload(client: httpx.Client, url: str, api_key: str, payload: dict) ->
             timeout=10.0,
         )
         if resp.status_code == 200:
-            log.info("Sent metrics for %s", payload["node_id"])
+            apps = len(payload.get("app_metrics", []))
+            log.info(
+                "Sent metrics for %s | system KPIs: %d | apps: %d",
+                payload["node_id"],
+                len(payload["metrics"]),
+                apps,
+            )
             return True
         else:
-            log.warning("Backend returned %d: %s", resp.status_code, resp.text)
+            log.warning("Backend returned %d: %s", resp.status_code, resp.text[:200])
             return False
     except httpx.RequestError as e:
         log.error("Connection error: %s", e)
         return False
 
 
-def flush_buffer(client: httpx.Client, url: str, api_key: str, buf: RetryBuffer):
+def flush_buffer(
+    client: httpx.Client,
+    url: str,
+    api_key: str,
+    buf: RetryBuffer,
+):
     batch = buf.peek_batch(10)
     sent = 0
     for payload in batch:
@@ -89,21 +112,33 @@ def main():
     last_retry = 0.0
 
     log.info(
-        "Daemon starting — node=%s interval=%ds backend=%s",
-        config["node_id"], interval, config["backend_url"],
+        "Daemon starting — node=%s  interval=%ds  backend=%s  app_tracking=%s",
+        config["node_id"],
+        interval,
+        config["backend_url"],
+        config.get("app_tracking", {}).get("enabled", False),
     )
 
     with httpx.Client() as client:
         while True:
-            metrics = collect_metrics()
-            payload = build_payload(config, metrics)
-            log.debug("Collected: %s", metrics)
+            # ── Collect ──────────────────────────────────────────────────────
+            system_metrics = collect_system_metrics()
+            app_metrics = collect_app_energy(config)
 
+            if app_metrics:
+                log.debug(
+                    "Top apps by power: %s",
+                    ", ".join(f"{a['app_name']}={a['power_w']:.1f}W" for a in app_metrics[:3]),
+                )
+
+            payload = build_payload(config, system_metrics, app_metrics)
+
+            # ── Send ─────────────────────────────────────────────────────────
             if not send_payload(client, config["backend_url"], config["api_key"], payload):
                 buf.add(payload)
-                log.warning("Buffered payload (%d total)", len(buf))
+                log.warning("Payload buffered (%d total in buffer)", len(buf))
 
-            # Periodically try to flush buffer
+            # ── Flush buffer periodically ─────────────────────────────────────
             now = time.time()
             if not buf.is_empty and (now - last_retry) >= retry_interval:
                 flush_buffer(client, config["backend_url"], config["api_key"], buf)

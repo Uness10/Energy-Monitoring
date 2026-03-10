@@ -5,3 +5,17 @@ api_key: "sk-xxxxxxxxxxxxxxxxxxxx"
 collection_interval_seconds: 10
 retry_interval_seconds: 30
 buffer_max_records: 3600
+
+# Per-application energy tracking (Linux RAPL + /proc)
+app_tracking:
+  enabled: true
+  mode: "top_n"          # "top_n" | "whitelist"
+  top_n: 10              # track the top N CPU consumers
+  whitelist:             # used when mode = "whitelist"
+    - firefox
+    - python3
+    - gcc
+    - java
+    - code                # VS Code
+    - matlab
+  min_cpu_percent: 1.0   # ignore processes below this threshold
