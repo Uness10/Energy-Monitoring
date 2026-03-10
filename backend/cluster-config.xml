@@ -1,0 +1,27 @@
+<clickhouse>
+    <remote_servers>
+        <energy_cluster>
+            <shard>
+                <replica>
+                    <host>clickhouse-01</host>
+                    <port>9000</port>
+                    <user>mlab</user>
+                    <password>mlab_secure_2026</password>
+                </replica>
+                <replica>
+                    <host>clickhouse-02</host>
+                    <port>9000</port>
+                    <user>mlab</user>
+                    <password>mlab_secure_2026</password>
+                </replica>
+            </shard>
+        </energy_cluster>
+    </remote_servers>
+
+    <zookeeper>
+        <node>
+            <host>clickhouse-keeper</host>
+            <port>9181</port>
+        </node>
+    </zookeeper>
+</clickhouse>
