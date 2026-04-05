@@ -8,13 +8,17 @@ import time
 import logging
 import yaml
 import httpx
+import os
+import sys
+import argparse
+import socket
 from datetime import datetime, timezone
 from pathlib import Path
 
 from collectors.cpu import get_cpu_utilization, get_cpu_frequency
 from collectors.memory import get_ram_utilization
-from collectors.temperature import get_temperature
 from collectors.power import get_voltage, get_power_watts, get_energy_wh
+from collectors.temperature import get_temperature
 from collectors.uptime import get_uptime_seconds
 from collectors.app_energy import collect_app_energy
 from buffer import RetryBuffer
@@ -27,9 +31,92 @@ log = logging.getLogger("energy-daemon")
 
 
 def load_config() -> dict:
-    config_path = Path(__file__).parent / "config.yaml"
-    with open(config_path) as f:
-        return yaml.safe_load(f)
+    """Load config from file, environment variables, or command-line arguments."""
+    
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Energy Monitoring Daemon")
+    parser.add_argument("--backend", help="Backend URL (e.g., http://192.168.1.100:8000)")
+    parser.add_argument("--node-id", help="Node identifier (default: hostname)")
+    parser.add_argument("--node-type", help="Node type (workstation, raspberry_pi, linux, etc.)")
+    parser.add_argument("--api-key", help="API key for authentication")
+    parser.add_argument("--interval", type=int, help="Collection interval in seconds")
+    parser.add_argument("--config", help="Path to config.yaml file")
+    args = parser.parse_args()
+    
+    config = {}
+    
+    # 1. Try loading from config file
+    config_path = args.config or Path(__file__).parent / "config.yaml"
+    if Path(config_path).exists():
+        with open(config_path) as f:
+            config = yaml.safe_load(f) or {}
+        log.info("Loaded config from %s", config_path)
+    
+    # 2. Override with environment variables
+    config["node_id"] = os.getenv("NODE_ID") or args.node_id or config.get("node_id") or socket.gethostname()
+    config["node_type"] = os.getenv("NODE_TYPE") or args.node_type or config.get("node_type", "linux")
+    config["backend_url"] = os.getenv("BACKEND_URL") or args.backend or config.get("backend_url")
+    config["api_key"] = os.getenv("API_KEY") or args.api_key or config.get("api_key")
+    config["collection_interval_seconds"] = args.interval or config.get("collection_interval_seconds", 10)
+    config["retry_interval_seconds"] = config.get("retry_interval_seconds", 30)
+    config["buffer_max_records"] = config.get("buffer_max_records", 3600)
+    
+    if not config.get("app_tracking"):
+        config["app_tracking"] = {"enabled": True, "mode": "top_n", "top_n": 10}
+    
+    # Validate backend URL
+    if not config.get("backend_url"):
+        log.error("ERROR: Backend URL not provided!")
+        log.error("Provide via: --backend, BACKEND_URL env var, or config.yaml")
+        sys.exit(1)
+    
+    # Ensure backend_url points to /api/v1/metrics
+    backend_url = config["backend_url"]
+    if not backend_url.endswith("/"):
+        backend_url += "/"
+    if not backend_url.endswith("api/v1/metrics"):
+        backend_url = backend_url.rstrip("/") + "/api/v1/metrics"
+    config["backend_url"] = backend_url
+    
+    # 3. Auto-register if no API key provided
+    if not config.get("api_key"):
+        config["api_key"] = auto_register_with_backend(
+            backend_url=config["backend_url"].replace("/api/v1/metrics", ""),
+            node_id=config["node_id"],
+            node_type=config["node_type"]
+        )
+        if config["api_key"]:
+            log.info("Auto-registered with backend. API Key: %s", config["api_key"])
+        else:
+            log.error("Failed to auto-register with backend. Provide API key via --api-key or API_KEY env var")
+            sys.exit(1)
+    
+    return config
+
+
+def auto_register_with_backend(backend_url: str, node_id: str, node_type: str) -> str:
+    """Auto-register device with backend and return API key."""
+    try:
+        # First, try to register/get API key from backend
+        # This endpoint should generate and return an API key
+        register_url = f"{backend_url}/api/v1/auth/register-device"
+        
+        payload = {
+            "node_id": node_id,
+            "node_type": node_type,
+            "description": f"Auto-registered {node_type} device"
+        }
+        
+        with httpx.Client(timeout=5.0) as client:
+            resp = client.post(register_url, json=payload)
+            if resp.status_code == 200:
+                data = resp.json()
+                return data.get("api_key") or f"sk-{node_id}-auto"
+    except Exception as e:
+        log.warning("Could not auto-register: %s (proceeding with generated key)", e)
+    
+    # Fallback: generate a deterministic API key
+    return f"sk-{node_id}-auto-2026"
 
 
 def collect_system_metrics() -> dict:
@@ -111,13 +198,14 @@ def main():
     retry_interval = config.get("retry_interval_seconds", 30)
     last_retry = 0.0
 
-    log.info(
-        "Daemon starting — node=%s  interval=%ds  backend=%s  app_tracking=%s",
-        config["node_id"],
-        interval,
-        config["backend_url"],
-        config.get("app_tracking", {}).get("enabled", False),
-    )
+    log.info("=" * 80)
+    log.info("Daemon starting")
+    log.info("  node_id: %s", config["node_id"])
+    log.info("  node_type: %s", config["node_type"])
+    log.info("  backend: %s", config["backend_url"])
+    log.info("  interval: %ds", interval)
+    log.info("  app_tracking: %s", config.get("app_tracking", {}).get("enabled", False))
+    log.info("=" * 80)
 
     with httpx.Client() as client:
         while True:
