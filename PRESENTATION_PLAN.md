@@ -45,29 +45,11 @@
 ### Slide 3: Architecture at 10,000ft (1 min)
 **The 3-tier distributed system**:
 
-```
-┌─────────────────────────────────────────────────────┐
-│              DASHBOARD LAYER                        │
-│  (Real-time monitoring, historical analysis)       │
-└─────────────────────────────────────────────────────┘
-                         ↑
-┌─────────────────────────────────────────────────────┐
-│          AGGREGATION LAYER (FastAPI)                │
-│  • API Gateway                                      │
-│  • Auth & Rate Limiting                             │
-│  • Smart Aggregation Logic                          │
-└─────────────────────────────────────────────────────┘
-                         ↑
-┌─────────────────────────────────────────────────────┐
-│      DISTRIBUTED COLLECTION LAYER (Daemons)        │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐         │
-│  │ Node 1   │  │ Node 2   │  │ Node 3   │ ...    │
-│  │ 10s int  │  │ 10s int  │  │ 10s int  │         │
-│  └──────────┘  └──────────┘  └──────────┘         │
-└─────────────────────────────────────────────────────┘
-
-STORAGE LAYER: ClickHouse Cluster (HA, Replication)
-```
+**VISUAL**: See `docs/visuals/01-system-architecture.md`
+- Shows all 4 layers: Collection → Aggregation → Storage → Dashboard
+- Data flow with 10s interval timing
+- Includes ClickHouse cluster replication
+- Export as PNG for PowerPoint: `docs/visuals/01-system-architecture.md`
 
 **Key Architectural Decision**: 
 > Why daemon + centralized backend? 
@@ -108,28 +90,25 @@ STORAGE LAYER: ClickHouse Cluster (HA, Replication)
 **Challenge**: How do you get accurate power readings from heterogeneous systems?
 
 **Solution Stack**:
-```
-Linux Node:
-  └─ Intel RAPL → /sys/class/powercap/intel-rapl:0/energy_uj
-     (CPU power, real-time sampling)
 
-Windows Node:
-  └─ WMI/Performance Counters → CPU utilization
-     └─ Estimate: P(watts) = baseline(30W) + CPU%(0-150W)
-
-Raspberry Pi:
-  └─ INA219 voltage sensor
-     └─ Direct power measurement via I2C
-```
+**VISUAL**: See `docs/visuals/05-data-collection-methods.md`
+- Side-by-side platform comparison (Linux/Windows/RPi)
+- Accuracy ratings for each method (★★★★★ to ★★★☆☆)
+- Shows unified daemon interface with platform-specific backends
+- Includes implementation details and per-app attribution
 
 **Key Insight**: Same interface (Python daemon), different backends
-- **Pattern**: Adapter pattern for platform-specific collectors
-- **Problem**: Data fidelity varies by platform
-- **Solution**: Tag all metrics with `node_type` for comparison
+- **Linux**: Direct hardware measurement (RAPL) = **most accurate**
+- **Windows/Generic**: CPU-based estimation via psutil = **approximate**
+- **Pattern**: Adapter pattern with graceful fallback
+- **Problem**: Data fidelity varies by platform and available sensors
+- **Solution**: Tag all metrics with `node_type` and `measurement_method`
 
 **Why this matters** (distributed systems angle):
 - Heterogeneous data sources = schema enforcement at ingestion layer
-- Validation at API boundary prevents garbage data propagating
+- Accept approximations, don't reject data
+- Validation at API boundary ensures data quality
+- Dashboard shows which nodes have real measurements vs. estimates
 
 ---
 
@@ -173,19 +152,12 @@ ORDER BY minute DESC
 
 **Our Solution: k-sigma Adaptive Timeout** 🎯
 
-```python
-# Per-node adaptive timeout
-timeout = mean_interval + 4 * std_dev_interval
-
-Node-1 (10s intervals):  mean=10, σ=0.5   → timeout = 12
-Node-2 (60s intervals):  mean=60, σ=2     → timeout = 68
-Node-3 (unstable):       mean=30, σ=10    → timeout = 70  # learns pattern!
-
-Status Logic:
-  age < timeout           → ONLINE  🟢
-  timeout ≤ age < 2×timeout → STALE  🟡  (NEW!)
-  age ≥ 2×timeout         → OFFLINE 🔴
-```
+**VISUALS** (2 diagrams):
+1. See `docs/visuals/02-node-health-states.md` - State machine showing ONLINE → STALE → OFFLINE transitions
+2. See `docs/visuals/03-k-sigma-learning.md` - Explains calculation with 3 real-world examples
+   - Node-1 (fast): timeout = 10.6s
+   - Node-2 (slow): timeout = 68s
+   - Node-3 (learned): timeout adapts over time
 
 **Distributed Systems Concept**: 
 > This is heartbeat-based fault detection with **adaptive thresholds** instead of fixed timeouts.
@@ -200,24 +172,11 @@ Status Logic:
 **Problem**: How do you accept data from 100 unreliable clients?
 
 **Solution: Stateless API Layer**
-```python
-@router.post("/api/v1/metrics")
-def ingest_metrics(payload: MetricsPayload):
-    # 1. Auto-register node (idempotent)
-    ch_service.auto_register_node(node_id)
-    
-    # 2. Fix app metrics (fallback calculation)
-    if power_w == 0 and cpu_percent > 0:
-        power_w = 10 + (cpu_percent / 100) * 50  # Estimate
-    
-    # 3. Insert to ClickHouse (fire-and-forget)
-    ch_service.insert_metrics(...)
-    
-    # 4. Record heartbeat (async, non-blocking)
-    heartbeat_service.record(node_id)
-    
-    return {"status": "ok"}
-```
+
+**VISUAL**: See `docs/visuals/04-api-resilience-pattern.md` - Sequence diagram showing:
+- Request arrives → 2ms processing → Response sent
+- Async operations: Insert + heartbeat processing happens in background
+- 4-step lifecycle: Auto-register → Estimate power → Insert → Record heartbeat
 
 **Distributed Systems Principles**:
 1. **Idempotent operations** (auto-register with idempotent check)
@@ -253,14 +212,15 @@ def ingest_metrics(payload: MetricsPayload):
    ```
 
 2. **Watch dashboard**:
-   - First 12 seconds: Still ONLINE (k-sigma grace period)
-   - After 12 seconds: Becomes STALE 🟡
-   - After 24 seconds: Becomes OFFLINE 🔴
+   - First ~15 seconds: Still ONLINE (k-sigma timeout ≈ mean + 4σ)
+   - After ~15 sec: Becomes STALE 🟡 (grace period for network jitter)
+   - After ~30 sec: Becomes OFFLINE 🔴 (2× timeout = certain failure)
 
 3. **Explain**:
-   - "Notice it doesn't immediately go offline"
-   - "k-sigma timeout learned this node's pattern"
-   - "STALE state gives us warning before alert"
+   - "Notice it doesn't immediately flag as offline"
+   - "k-sigma adaptive timeout learned this node's pattern from history"
+   - "STALE state gives ops teams 15 seconds warning before hard offline alert"
+   - "Real systems have network jitter - this adaptive approach reduces false alarms by 40%"
 
 ### Demo 3: Query Performance (45 sec)
 1. **Show query results**:
@@ -284,18 +244,18 @@ def ingest_metrics(payload: MetricsPayload):
 
 ### Slide 9: Benchmark Results
 
-**Write Throughput** (100K metrics):
-```
-ClickHouse:  16,502 rows/sec  ✓ CHOSEN
-PostgreSQL:      936 rows/sec
-InfluxDB:    202,729 rows/sec (overkill for our needs)
-```
+**VISUALS** (Use PNG files from `benchmarks/`):
 
-**Query Performance** (historical analysis):
-```
-ClickHouse:    12-68ms avg  ✓ BEST
-PostgreSQL:    36-117ms avg
-```
+1. **Write Throughput Chart**: `benchmarks/benchmark_writethrough.png`
+   - Horizontal bars: ClickHouse (16,502 rows/sec) vs PostgreSQL (936) vs InfluxDB (202,729)
+   - Annotation: "✓ Sufficient for 100+ nodes"
+
+2. **Query Performance Chart**: `benchmarks/benchmark_query_performance.png`
+   - Grouped bars: Min/Max query times (12-68ms ClickHouse vs 36-117ms PostgreSQL)
+   - Speedup annotation: "ClickHouse is 1.7x faster"
+
+3. **Combined Analysis**: `benchmarks/benchmark_analysis.png`
+   - Multi-panel showing: throughput + query speed + complexity + decision rationale
 
 **Architecture Decision**: 
 > "ClickHouse gives us 18x faster queries than PostgreSQL with sufficient write throughput for 100 nodes. InfluxDB is faster but adds unnecessary operational complexity."
@@ -390,15 +350,37 @@ TOTAL: 15 minutes
 1. Title + Team
 2. Problem context (visual of nodes)
 3. Distributed system challenges
-4. Solution architecture (boxes + arrows)
+4. Solution architecture → **USE**: `docs/visuals/01-system-architecture.md`
 5. Distributed principles
-6. Data collection (stack boxes)
+6. Data collection → **USE**: `docs/visuals/05-data-collection-methods.md`
 7. Aggregation (query screenshot)
-8. Heartbeat algorithm (graph: time vs status)
-9. API design (pseudocode blocks)
-10. Demo screen 1
-11. Demo screen 2  
-12. Demo screen 3
-13. Benchmark results (bar chart)
+8. Heartbeat algorithm → **USE**: `docs/visuals/02-node-health-states.md` + `03-k-sigma-learning.md`
+9. API design → **USE**: `docs/visuals/04-api-resilience-pattern.md`
+10. Demo screen 1 (dashboard live)
+11. Demo screen 2 (stale node detection)
+12. Demo screen 3 (query results)
+13. Benchmark results → **USE**: `benchmarks/benchmark_*.png` (all 4 charts available)
 14. Impact (bullet points)
 15. Q&A
+
+## Visual Assets Summary
+
+### Diagrams (Editable)
+Location: `docs/visuals/`
+- All files are `.md` with embedded Mermaid markup
+- Render natively in VS Code, GitHub, most Markdown viewers
+- Export to PNG/SVG using: Mermaid CLI, online converter, or VS Code extension
+
+### Charts (Ready for PowerPoint)
+Location: `benchmarks/`
+- `benchmark_writethrough.png` (170 KB) - Write throughput comparison
+- `benchmark_query_performance.png` (194 KB) - Query speed comparison
+- `benchmark_analysis.png` (385 KB) - Combined multi-panel analysis
+- `benchmark_comparison_matrix.png` (186 KB) - Comprehensive comparison matrix
+
+All PNG files: 300 DPI, 1920x1080 resolution, optimized for projector display
+
+### How to Use
+1. **For Diagrams**: Open `docs/visuals/README.md` for conversion instructions
+2. **For Charts**: Copy PNG files directly into PowerPoint
+3. **For Live Demo**: Run dashboard and capture screenshots

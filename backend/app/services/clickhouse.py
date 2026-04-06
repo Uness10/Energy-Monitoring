@@ -230,7 +230,7 @@ class ClickHouseService:
 
     def get_app_list(self, node_id: Optional[str] = None) -> list:
         """Get list of apps with their power usage."""
-        conditions = ["app_name != 'system'", "timestamp >= now() - INTERVAL 1 HOUR"]
+        conditions = ["app_name != 'system'", "timestamp >= now() - INTERVAL 1 HOUR", "metric = 'power_w'"]
         params = {}
         
         if node_id:
@@ -242,8 +242,8 @@ class ClickHouseService:
             SELECT
                 node_id,
                 app_name,
-                avg(if(metric='power_w', value, 1)) AS avg_power_w,
-                max(if(metric='power_w', value, 1)) AS peak_power_w,
+                avg(value) AS avg_power_w,
+                max(value) AS peak_power_w,
                 max(timestamp) AS last_seen,
                 count() AS samples
             FROM energy_monitoring.energy_metrics
