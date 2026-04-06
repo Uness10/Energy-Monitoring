@@ -1,0 +1,31 @@
+{
+  "clickhouse": {
+    "write": {
+      "throughput_rows_per_sec": 16502.12072054121,
+      "time_seconds": 6.059827199998836
+    },
+    "queries": {
+      "q1_simple_avg_ms": 12.16779999958817,
+      "q2_group_by_node_ms": 55.42090000017197,
+      "q3_time_range_agg_ms": 68.33030000052531
+    }
+  },
+  "postgresql": {
+    "write": {
+      "throughput_rows_per_sec": 936.4027554400282,
+      "time_seconds": 106.79165499999908
+    },
+    "queries": {
+      "q1_simple_avg_ms": 64.21039999986533,
+      "q2_group_by_node_ms": 116.8033000012656,
+      "q3_time_range_agg_ms": 36.17840000151773
+    }
+  },
+  "influxdb": {
+    "write": {
+      "throughput_rows_per_sec": 202728.76978705256,
+      "time_seconds": 0.49326990000008664
+    },
+    "queries": {}
+  }
+}

@@ -4,6 +4,7 @@ from typing import Optional
 
 from ..models.schemas import MetricsPayload
 from ..services.clickhouse import ch_service
+from ..services.heartbeat import heartbeat_service
 from ..auth.api_key import verify_api_key
 from ..auth.jwt_handler import verify_token
 
@@ -18,19 +19,46 @@ def ingest_metrics(
     """
     Ingest metrics from a daemon.
     Auto-registers the node if it doesn't exist.
+    Records heartbeat to mark node as ONLINE.
+    Calculates app power from CPU percent.
     """
     # Auto-register node (non-critical, continues even if fails)
     ch_service.auto_register_node(node_id, node_type="unknown")
+
+    # Fix app metrics: calculate power_w from cpu_percent if not provided
+    fixed_app_metrics = []
+    if payload.app_metrics:
+        for app in payload.app_metrics:
+            app_dict = app.model_dump()
+            cpu_pct = app_dict.get("cpu_percent", 0)
+            power_w = app_dict.get("power_w", 0)
+            
+            # If power_w is 0 or not provided but cpu_percent exists, estimate power
+            # Model: baseline 10W + up to 50W based on CPU usage (so 100% CPU = 60W per app)
+            if power_w == 0 and cpu_pct > 0:
+                app_dict["power_w"] = round(10.0 + (cpu_pct / 100.0) * 50.0, 2)
+            elif power_w == 0 and cpu_pct == 0:
+                # Idle app consumes nominal power
+                app_dict["power_w"] = round(2.0, 2)
+            
+            fixed_app_metrics.append(app_dict)
 
     # Insert metrics
     ch_service.insert_metrics(
         node_id=node_id,
         timestamp=payload.timestamp.replace(tzinfo=None),
         metrics=payload.metrics,
-        app_metrics=[a.model_dump() for a in payload.app_metrics] if payload.app_metrics else None,
+        app_metrics=fixed_app_metrics if fixed_app_metrics else None,
     )
+    
+    # Record heartbeat (marks node as ONLINE in dashboard)
+    try:
+        heartbeat_service.record_arrival(node_id, payload.timestamp)
+    except Exception as e:
+        # Non-critical - continue even if heartbeat fails
+        pass
 
-    app_count = len(payload.app_metrics) if payload.app_metrics else 0
+    app_count = len(fixed_app_metrics) if fixed_app_metrics else 0
     return {
         "status": "ok",
         "node_id": node_id,

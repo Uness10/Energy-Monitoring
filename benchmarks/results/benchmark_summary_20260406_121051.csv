@@ -1,0 +1,3 @@
+Database,Metric,Value,Unit
+influxdb,write_throughput_rows_per_sec,273530.76,rows/sec
+influxdb,write_time_seconds,0.37,sec

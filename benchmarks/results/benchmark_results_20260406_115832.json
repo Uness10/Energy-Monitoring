@@ -1,0 +1,9 @@
+{
+  "influxdb": {
+    "write": {
+      "throughput_rows_per_sec": 429545.6995816283,
+      "time_seconds": 0.23280410000006668
+    },
+    "queries": {}
+  }
+}
