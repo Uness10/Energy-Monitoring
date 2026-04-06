@@ -10,15 +10,15 @@ const RANGES = [
 
 export default function TimeRangePicker({ selected, onChange }) {
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-1.5 flex-wrap">
       {RANGES.map((r) => (
         <button
           key={r.label}
           onClick={() => onChange(r.minutes)}
-          className={`px-3 py-1 text-xs rounded font-medium ${
+          className={`px-3 py-1.5 text-xs rounded-xl font-semibold transition ${
             selected === r.minutes
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "bg-[var(--brand)] text-white shadow"
+              : "bg-white/80 border border-[var(--line)] text-[var(--ink-muted)] hover:bg-[rgba(31,122,92,0.1)] hover:text-[var(--ink)]"
           }`}
         >
           {r.label}

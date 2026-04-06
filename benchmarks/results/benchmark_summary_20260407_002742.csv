@@ -1,0 +1,8 @@
+Database,Metric,Value,Unit
+clickhouse,write_throughput_rows_per_sec,19248.87,rows/sec
+clickhouse,write_time_seconds,5.20,sec
+clickhouse,q1_simple_avg_ms,13.00,ms
+clickhouse,q2_group_by_node_ms,65.10,ms
+clickhouse,q3_time_range_agg_ms,49.09,ms
+influxdb,write_throughput_rows_per_sec,342704.00,rows/sec
+influxdb,write_time_seconds,0.29,sec

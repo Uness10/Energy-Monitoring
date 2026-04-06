@@ -16,7 +16,7 @@ export default function AppSelector({ nodeId, selected, onChange }) {
     <select
       value={selected || ""}
       onChange={(e) => onChange(e.target.value || null)}
-      className="border border-gray-300 rounded px-3 py-1.5 text-sm"
+      className="control-select min-w-[180px]"
     >
       <option value="">All Apps</option>
       {apps.map((a) => (

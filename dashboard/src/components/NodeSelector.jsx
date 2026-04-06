@@ -5,7 +5,7 @@ export default function NodeSelector({ nodes, selected, onChange }) {
     <select
       value={selected || ""}
       onChange={(e) => onChange(e.target.value || null)}
-      className="border border-gray-300 rounded px-3 py-1.5 text-sm"
+      className="control-select min-w-[160px]"
     >
       <option value="">All Nodes</option>
       {(nodes || []).map((n) => (

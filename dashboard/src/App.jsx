@@ -19,7 +19,7 @@ function ProtectedRoute({ children }) {
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Routes>
         <Route path="/login" element={<Login />} />
 
@@ -27,32 +27,37 @@ export default function App() {
           path="*"
           element={
             <ProtectedRoute>
-              <nav className="bg-white shadow">
-                <div className="max-w-7xl mx-auto px-4 flex items-center h-14 gap-6">
-                  <span className="font-bold text-gray-800">Energy Monitor</span>
-                  {NAV.map((l) => (
-                    <NavLink
-                      key={l.to}
-                      to={l.to}
-                      end={l.to === "/"}
-                      className={({ isActive }) =>
-                        `text-sm font-medium pb-0.5 ${
-                          isActive
-                            ? "text-blue-600 border-b-2 border-blue-600"
-                            : "text-gray-500 hover:text-gray-700"
-                        }`
-                      }
-                    >
-                      {l.label}
-                    </NavLink>
-                  ))}
-                  <div className="ml-auto">
+              <nav className="sticky top-0 z-50 border-b border-[var(--line)] bg-[rgba(245,247,243,0.86)] backdrop-blur">
+                <div className="app-shell py-3 flex flex-wrap items-center gap-3 sm:gap-6">
+                  <div className="panel-strong px-3.5 py-2 flex items-center gap-2.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[var(--brand)]" />
+                    <span className="font-semibold text-sm text-[var(--ink)] tracking-tight">Energy Monitor</span>
+                  </div>
+                  <div className="panel px-1.5 py-1 flex items-center gap-1 overflow-x-auto">
+                    {NAV.map((l) => (
+                      <NavLink
+                        key={l.to}
+                        to={l.to}
+                        end={l.to === "/"}
+                        className={({ isActive }) =>
+                          `px-3 py-1.5 rounded-xl text-sm font-medium transition whitespace-nowrap ${
+                            isActive
+                              ? "bg-[var(--brand)] text-white"
+                              : "text-[var(--ink-muted)] hover:bg-[rgba(31,122,92,0.1)] hover:text-[var(--ink)]"
+                          }`
+                        }
+                      >
+                        {l.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                  <div className="ml-auto panel px-1.5 py-1">
                     <button
                       onClick={() => {
                         localStorage.removeItem("token");
                         window.location.href = "/login";
                       }}
-                      className="text-xs text-gray-400 hover:text-gray-600"
+                      className="px-3 py-1.5 rounded-xl text-sm text-[var(--ink-muted)] hover:text-[var(--ink)] hover:bg-[rgba(31,122,92,0.1)] transition"
                     >
                       Sign out
                     </button>
@@ -60,7 +65,7 @@ export default function App() {
                 </div>
               </nav>
 
-              <main className="max-w-7xl mx-auto px-4 py-6">
+              <main className="app-shell py-6 sm:py-8">
                 <Routes>
                   <Route path="/"                element={<Overview />}        />
                   <Route path="/realtime"        element={<RealtimeMonitor />} />

@@ -35,15 +35,14 @@ export default function NodeDetail() {
   const start = new Date(now.getTime() - rangeMinutes * 60 * 1000);
 
   return (
-    <div>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+    <div className="space-y-5">
+      <div className="panel p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-gray-800">{nodeId}</h2>
-          <div className="flex items-center gap-3 mt-0.5">
+          <h2 className="section-title">{nodeId}</h2>
+          <div className="flex items-center gap-3 mt-1">
             {nodeStatus && <StatusIndicator status={nodeStatus.status} />}
             {nodeStatus?.latest_metrics?.power_w != null && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-[var(--ink-muted)]">
                 {nodeStatus.latest_metrics.power_w.toFixed(1)} W current
               </span>
             )}
@@ -52,8 +51,7 @@ export default function NodeDetail() {
         <TimeRangePicker selected={rangeMinutes} onChange={setRangeMinutes} />
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 mb-4 border-b border-gray-200">
+      <div className="panel p-1.5 inline-flex gap-1">
         {[
           { id: "system", label: "System KPIs" },
           { id: "apps",   label: "Application Energy" },
@@ -61,10 +59,10 @@ export default function NodeDetail() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            className={`px-4 py-2 text-sm font-semibold rounded-xl transition-colors ${
               activeTab === tab.id
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                ? "bg-[var(--brand)] text-white"
+                : "text-[var(--ink-muted)] hover:text-[var(--ink)] hover:bg-[rgba(31,122,92,0.1)]"
             }`}
           >
             {tab.label}
@@ -72,9 +70,8 @@ export default function NodeDetail() {
         ))}
       </div>
 
-      {/* System KPIs tab */}
       {activeTab === "system" && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {SYSTEM_KPIS.map((kpi) => (
             <KpiChartForNode
               key={kpi.key}
@@ -89,13 +86,10 @@ export default function NodeDetail() {
         </div>
       )}
 
-      {/* Application Energy tab */}
       {activeTab === "apps" && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <AppEnergyBreakdown nodeId={nodeId} />
-            <AppEnergyTable nodeId={nodeId} />
-          </div>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <AppEnergyBreakdown nodeId={nodeId} />
+          <AppEnergyTable nodeId={nodeId} />
         </div>
       )}
     </div>

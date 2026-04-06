@@ -21,12 +21,16 @@ export default function RealtimeMonitor() {
   );
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-800">Realtime Monitor</h2>
+    <div className="space-y-5">
+      <div className="panel p-4 sm:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div>
+          <h2 className="section-title">Realtime Monitor</h2>
+          <p className="section-subtitle">Live 15-minute trend window updating every 5 seconds.</p>
+        </div>
         <NodeSelector nodes={nodes} selected={selectedNode} onChange={setSelectedNode} />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <KpiChart data={powerData?.data || []} title="Power (W)" color="#ef4444" />
         <KpiChart data={cpuData?.data || []} title="CPU Utilization (%)" color="#3b82f6" />
       </div>

@@ -2,7 +2,7 @@
 ================================================================================
 DATABASE BENCHMARK REPORT
 ================================================================================
-Generated: 2026-04-06 12:18:35
+Generated: 2026-04-07 00:28:05
 
 BENCHMARK PARAMETERS:
 - Nodes: 10
@@ -18,24 +18,16 @@ RESULTS SUMMARY
 
 CLICKHOUSE
 ----------------------------------------
-Write Throughput:           16,502 rows/sec
-Write Time:                   6.06 seconds
-Avg Query Time:              45.31 ms
-Min Query Time:              12.17 ms
-Max Query Time:              68.33 ms
-
-POSTGRESQL
-----------------------------------------
-Write Throughput:              936 rows/sec
-Write Time:                 106.79 seconds
-Avg Query Time:              72.40 ms
-Min Query Time:              36.18 ms
-Max Query Time:             116.80 ms
+Write Throughput:           19,249 rows/sec
+Write Time:                   5.20 seconds
+Avg Query Time:              42.39 ms
+Min Query Time:              13.00 ms
+Max Query Time:              65.10 ms
 
 INFLUXDB
 ----------------------------------------
-Write Throughput:          202,729 rows/sec
-Write Time:                   0.49 seconds
+Write Throughput:          342,704 rows/sec
+Write Time:                   0.29 seconds
 Avg Query Time:               0.00 ms
 Min Query Time:               0.00 ms
 Max Query Time:               0.00 ms
@@ -44,8 +36,8 @@ Max Query Time:               0.00 ms
 RECOMMENDATIONS
 ================================================================================
 
-Best Write Performance: influxdb (202,729 rows/sec)
-Best Query Performance: clickhouse (45.31ms avg)
+Best Write Performance: influxdb (342,704 rows/sec)
+Best Query Performance: clickhouse (42.39ms avg)
 
 CONCLUSION:
 - Use the above results to choose the best database for your workload

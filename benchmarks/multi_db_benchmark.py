@@ -417,36 +417,49 @@ class InfluxDBBench:
         """Measure query speed."""
         results = {}
         
-        # Q1: Simple aggregation
+        # Q1: Simple aggregation (explicit field filter, no gap-filling)
         try:
             start = time.perf_counter()
-            query = f'from(bucket:"{DB_CONFIGS["influxdb"]["bucket"]}") |> range(start: -30d) |> mean()'
+            query = f'''from(bucket:"{DB_CONFIGS["influxdb"]["bucket"]}")
+                |> range(start: -30d)
+                |> filter(fn: (r) => r._field == "value")
+                |> mean()
+            '''
             result = self.query_api.query(query)
             elapsed = (time.perf_counter() - start) * 1000
             results["q1_simple_avg_ms"] = elapsed
-            print(f"  Q1 (simple avg): {elapsed:.2f}ms")
+            print(f"  Q1 (simple avg with field filter): {elapsed:.2f}ms")
         except Exception as e:
             print(f"  Q1 failed: {e}")
         
-        # Q2: Group by node
+        # Q2: Group by node (filter to actual values, no implicit filling)
         try:
             start = time.perf_counter()
-            query = f'from(bucket:"{DB_CONFIGS["influxdb"]["bucket"]}") |> range(start: -30d) |> group(columns: ["node_id"]) |> mean()'
+            query = f'''from(bucket:"{DB_CONFIGS["influxdb"]["bucket"]}")
+                |> range(start: -30d)
+                |> filter(fn: (r) => r._field == "value")
+                |> group(columns: ["node_id"])
+                |> mean()
+            '''
             result = self.query_api.query(query)
             elapsed = (time.perf_counter() - start) * 1000
             results["q2_group_by_node_ms"] = elapsed
-            print(f"  Q2 (group by node): {elapsed:.2f}ms")
+            print(f"  Q2 (group by node with field filter): {elapsed:.2f}ms")
         except Exception as e:
             print(f"  Q2 failed: {e}")
         
-        # Q3: Time range + aggregation
+        # Q3: Time range + aggregation (explicit field, no filling on missing intervals)
         try:
             start = time.perf_counter()
-            query = f'from(bucket:"{DB_CONFIGS["influxdb"]["bucket"]}") |> range(start: -7d) |> max()'
+            query = f'''from(bucket:"{DB_CONFIGS["influxdb"]["bucket"]}")
+                |> range(start: -7d)
+                |> filter(fn: (r) => r._field == "value")
+                |> max()
+            '''
             result = self.query_api.query(query)
             elapsed = (time.perf_counter() - start) * 1000
             results["q3_time_range_agg_ms"] = elapsed
-            print(f"  Q3 (time range agg): {elapsed:.2f}ms")
+            print(f"  Q3 (time range max with field filter): {elapsed:.2f}ms")
         except Exception as e:
             print(f"  Q3 failed: {e}")
         
