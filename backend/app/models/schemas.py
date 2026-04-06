@@ -41,6 +41,12 @@ class MetricsPayload(BaseModel):
         return v
 
 
+class DeviceRegister(BaseModel):
+    node_id: str
+    node_type: str = "linux"
+    description: Optional[str] = None
+
+
 class MetricsQuery(BaseModel):
     node_id: Optional[str] = None
     app_name: Optional[str] = None
