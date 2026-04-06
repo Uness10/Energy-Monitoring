@@ -1,0 +1,30 @@
+# Energy Monitoring Daemon - Docker Image
+# Build: docker build -t energy-daemon:latest -f Dockerfile.daemon .
+# Run: docker run -e BACKEND_URL="http://192.168.1.100:8000" -e NODE_ID="my-device" energy-daemon:latest
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    sensors \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy daemon and collectors
+COPY daemon.py .
+COPY buffer.py .
+COPY collectors/ ./collectors/
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Environment variables (can be overridden at runtime)
+ENV NODE_ID="docker-device"
+ENV NODE_TYPE="linux"
+ENV BACKEND_URL="http://localhost:8000"
+ENV COLLECTION_INTERVAL="10"
+
+# Default command
+CMD ["python", "daemon.py"]

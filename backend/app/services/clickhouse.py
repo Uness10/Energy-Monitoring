@@ -8,10 +8,7 @@ log = logging.getLogger(__name__)
 
 
 class ClickHouseService:
-    """
-    ClickHouse client with automatic failover to replica node.
-    Primary: clickhouse-01  →  Replica: clickhouse-02
-    """
+    """ClickHouse client with automatic failover."""
 
     def __init__(self):
         self._client = None
@@ -34,6 +31,7 @@ class ClickHouseService:
 
     def _connect(self):
         settings = get_settings()
+        
         # Try primary first, fall back to replica
         for host, port in [
             (settings.clickhouse_host, settings.clickhouse_http_port),
@@ -42,35 +40,70 @@ class ClickHouseService:
             try:
                 client = self._make_client(host, port)
                 client.query("SELECT 1")
-                log.info("Connected to ClickHouse at %s:%s", host, port)
+                log.info(f"Connected to ClickHouse at {host}:{port}")
                 return client
             except Exception as e:
-                log.warning("ClickHouse at %s:%s unreachable: %s", host, port, e)
+                log.warning(f"ClickHouse at {host}:{port} unreachable: {e}")
 
-        raise RuntimeError("No ClickHouse node reachable (tried primary and replica)")
+        raise RuntimeError("No ClickHouse node reachable")
 
     def _execute(self, fn):
-        """Execute fn(client). On connection error, reset and retry once via replica."""
+        """Execute fn(client). Retry once on failure."""
         try:
             return fn(self.client)
         except Exception as e:
-            log.warning("ClickHouse query failed (%s), reconnecting...", e)
+            log.warning(f"ClickHouse query failed: {e}, retrying...")
             self._client = None
-            return fn(self.client)
+            try:
+                return fn(self.client)
+            except Exception as e2:
+                log.error(f"ClickHouse retry failed: {e2}")
+                raise
 
-    # ─── Writes ───────────────────────────────────────────────────────────────
+    # ─── Node Registration ────────────────────────────────────────────────────
+
+    def auto_register_node(self, node_id: str, node_type: str = "unknown") -> bool:
+        """Auto-register node on first metric. Non-critical - continue even if fails."""
+        try:
+            def _q(client):
+                # Check if exists
+                result = client.query(
+                    "SELECT COUNT() FROM energy_monitoring.nodes WHERE node_id = {node_id:String}",
+                    parameters={"node_id": node_id}
+                )
+                exists = result.result_rows[0][0] > 0 if result.result_rows else False
+                
+                if not exists:
+                    # Insert new node
+                    api_key = f"sk-{node_id}-2026"
+                    client.insert(
+                        "nodes",
+                        [[node_id, node_type, api_key, f"Auto-registered {node_type}"]],
+                        column_names=["node_id", "node_type", "api_key", "description"],
+                    )
+                    log.info(f"Auto-registered node: {node_id}")
+                return True
+            
+            self._execute(_q)
+            return True
+        except Exception as e:
+            log.warning(f"Could not auto-register {node_id}: {e} (will continue)")
+            return False
+
+    # ─── Metrics ──────────────────────────────────────────────────────────────
 
     def insert_metrics(
         self,
         node_id: str,
         timestamp: datetime,
         metrics: dict,
-        app_metrics: list[dict] | None = None,
+        app_metrics: list = None,
     ):
-        """
-        Insert system-level KPIs (app_name='system') and optional per-app rows.
-        Each metric becomes one row: (timestamp, node_id, app_name, metric, value)
-        """
+        """Insert metrics. Auto-register node if not exists."""
+        # Try to auto-register first (non-critical)
+        self.auto_register_node(node_id, "unknown")
+        
+        # Build rows
         rows = [
             [timestamp, node_id, "system", metric_name, value]
             for metric_name, value in metrics.items()
@@ -89,19 +122,68 @@ class ClickHouseService:
                 rows,
                 column_names=["timestamp", "node_id", "app_name", "metric", "value"],
             )
+            log.debug(f"Inserted {len(rows)} metric rows for {node_id}")
 
         self._execute(_insert)
 
-    def register_node(self, node_id: str, node_type: str, api_key: str, description: str = ""):
-        def _insert(client):
-            client.insert(
-                "nodes",
-                [[node_id, node_type, api_key, description]],
-                column_names=["node_id", "node_type", "api_key", "description"],
+    # ─── Queries ──────────────────────────────────────────────────────────────
+
+    def get_nodes(self) -> list:
+        """Get all registered nodes."""
+        def _q(client):
+            result = client.query(
+                "SELECT node_id, node_type, description FROM energy_monitoring.nodes ORDER BY node_id"
             )
-        self._execute(_insert)
+            return [
+                {"node_id": r[0], "node_type": r[1], "description": r[2]}
+                for r in result.result_rows
+            ] if result.result_rows else []
+        
+        try:
+            return self._execute(_q)
+        except Exception as e:
+            log.warning(f"Could not get nodes: {e}")
+            return []
 
-    # ─── Reads ────────────────────────────────────────────────────────────────
+    def get_node(self, node_id: str) -> Optional[dict]:
+        """Get specific node."""
+        def _q(client):
+            result = client.query(
+                "SELECT node_id, node_type, api_key, description FROM energy_monitoring.nodes WHERE node_id = {node_id:String}",
+                parameters={"node_id": node_id},
+            )
+            if not result.result_rows:
+                return None
+            r = result.result_rows[0]
+            return {"node_id": r[0], "node_type": r[1], "api_key": r[2], "description": r[3]}
+        
+        try:
+            return self._execute(_q)
+        except Exception as e:
+            log.warning(f"Could not get node {node_id}: {e}")
+            return None
+
+    def get_latest_metrics(self, node_id: str) -> dict:
+        """Get latest metrics for a node."""
+        def _q(client):
+            result = client.query(
+                """
+                SELECT metric, argMax(value, timestamp)
+                FROM energy_monitoring.energy_metrics
+                WHERE node_id = {node_id:String}
+                  AND app_name = 'system'
+                  AND timestamp >= now() - INTERVAL 1 HOUR
+                GROUP BY metric
+                """,
+                parameters={"node_id": node_id},
+            )
+            return {r[0]: r[1] for r in result.result_rows} if result.result_rows else {}
+        
+        try:
+            return self._execute(_q)
+        except Exception as e:
+            log.warning(f"Could not get metrics for {node_id}: {e}")
+            return {}
 
     def query_metrics(
         self,
@@ -112,13 +194,10 @@ class ClickHouseService:
         end: Optional[datetime] = None,
         aggregation: Optional[str] = None,
     ) -> list:
-        if aggregation:
-            return self._query_aggregated(node_id, app_name, metric, start, end, aggregation)
-        return self._query_raw(node_id, app_name, metric, start, end)
-
-    def _build_where(self, node_id, app_name, metric, start, end, ts_col="timestamp") -> tuple[str, dict]:
+        """Query metrics with optional aggregation."""
         conditions = ["1=1"]
         params = {}
+        
         if node_id:
             conditions.append("node_id = {node_id:String}")
             params["node_id"] = node_id
@@ -129,192 +208,72 @@ class ClickHouseService:
             conditions.append("metric = {metric:String}")
             params["metric"] = metric
         if start:
-            conditions.append(f"{ts_col} >= {{start:DateTime64(3)}}")
+            conditions.append("timestamp >= {start:DateTime64(3)}")
             params["start"] = start
         if end:
-            conditions.append(f"{ts_col} <= {{end:DateTime64(3)}}")
+            conditions.append("timestamp <= {end:DateTime64(3)}")
             params["end"] = end
-        return " AND ".join(conditions), params
-
-    def _query_raw(self, node_id, app_name, metric, start, end) -> list:
-        where, params = self._build_where(node_id, app_name, metric, start, end)
-        query = f"""
-            SELECT timestamp, node_id, app_name, metric, value
-            FROM energy_metrics
-            WHERE {where}
-            ORDER BY timestamp DESC
-            LIMIT 10000
-        """
+        
+        where = " AND ".join(conditions)
+        query = f"SELECT timestamp, node_id, app_name, metric, value FROM energy_monitoring.energy_metrics WHERE {where} ORDER BY timestamp DESC LIMIT 10000"
+        
         def _q(client):
             result = client.query(query, parameters=params)
             return [
-                {"timestamp": r[0], "node_id": r[1], "app_name": r[2],
-                 "metric": r[3], "value": r[4]}
+                {"timestamp": r[0], "node_id": r[1], "app_name": r[2], "metric": r[3], "value": r[4]}
                 for r in result.result_rows
-            ]
-        return self._execute(_q)
-
-    def _query_aggregated(self, node_id, app_name, metric, start, end, aggregation) -> list:
-        agg_funcs = {
-            "1min":  "toStartOfMinute(timestamp)",
-            "5min":  "toStartOfFiveMinutes(timestamp)",
-            "1h":    "toStartOfHour(timestamp)",
-            "1d":    "toStartOfDay(timestamp)",
-        }
-        if aggregation not in agg_funcs:
-            return self._query_raw(node_id, app_name, metric, start, end)
-
-        time_expr = agg_funcs[aggregation]
-        where, params = self._build_where(node_id, app_name, metric, start, end)
-        query = f"""
-            SELECT
-                {time_expr}        AS bucket,
-                node_id,
-                app_name,
-                metric,
-                avg(value)         AS avg_value,
-                min(value)         AS min_value,
-                max(value)         AS max_value,
-                count()            AS sample_count
-            FROM energy_metrics
-            WHERE {where}
-            GROUP BY bucket, node_id, app_name, metric
-            ORDER BY bucket DESC
-            LIMIT 10000
-        """
-        def _q(client):
-            result = client.query(query, parameters=params)
-            return [
-                {"timestamp": r[0], "node_id": r[1], "app_name": r[2],
-                 "metric": r[3], "avg_value": r[4], "min_value": r[5],
-                 "max_value": r[6], "sample_count": r[7]}
-                for r in result.result_rows
-            ]
-        return self._execute(_q)
-
-    def get_nodes(self) -> list:
-        def _q(client):
-            result = client.query(
-                "SELECT node_id, node_type, description, registered FROM nodes ORDER BY node_id"
-            )
-            return [
-                {"node_id": r[0], "node_type": r[1], "description": r[2], "registered": r[3]}
-                for r in result.result_rows
-            ]
-        return self._execute(_q)
-
-    def get_node(self, node_id: str) -> Optional[dict]:
-        def _q(client):
-            result = client.query(
-                "SELECT node_id, node_type, api_key, description, registered "
-                "FROM nodes WHERE node_id = {node_id:String}",
-                parameters={"node_id": node_id},
-            )
-            if not result.result_rows:
-                return None
-            r = result.result_rows[0]
-            return {"node_id": r[0], "node_type": r[1], "api_key": r[2],
-                    "description": r[3], "registered": r[4]}
-        return self._execute(_q)
-
-    def get_latest_metrics(self, node_id: str) -> dict:
-        """Returns the most recent value for each system-level KPI."""
-        def _q(client):
-            result = client.query(
-                """
-                SELECT metric, argMax(value, timestamp)
-                FROM energy_metrics
-                WHERE node_id = {node_id:String}
-                  AND app_name = 'system'
-                  AND timestamp >= now() - INTERVAL 5 MINUTE
-                GROUP BY metric
-                """,
-                parameters={"node_id": node_id},
-            )
-            return {r[0]: r[1] for r in result.result_rows}
-        return self._execute(_q)
-
-    # ─── Per-App Queries ──────────────────────────────────────────────────────
+            ] if result.result_rows else []
+        
+        try:
+            return self._execute(_q)
+        except Exception as e:
+            log.warning(f"Query failed: {e}")
+            return []
 
     def get_app_list(self, node_id: Optional[str] = None) -> list:
-        """List all tracked applications with their latest power readings."""
-        conditions = ["app_name != 'system'",
-                      "timestamp >= now() - INTERVAL 1 HOUR"]
+        """Get list of apps with their power usage."""
+        conditions = ["app_name != 'system'", "timestamp >= now() - INTERVAL 1 HOUR"]
         params = {}
+        
         if node_id:
             conditions.append("node_id = {node_id:String}")
             params["node_id"] = node_id
+        
         where = " AND ".join(conditions)
         query = f"""
             SELECT
                 node_id,
                 app_name,
-                avg(if(metric='power_w', value, 0))  AS avg_power_w,
-                max(if(metric='power_w', value, 0))  AS peak_power_w,
-                max(timestamp)                        AS last_seen,
-                count()                               AS samples
-            FROM energy_metrics
+                avg(if(metric='power_w', value, 0)) AS avg_power_w,
+                max(if(metric='power_w', value, 0)) AS peak_power_w,
+                max(timestamp) AS last_seen,
+                count() AS samples
+            FROM energy_monitoring.energy_metrics
             WHERE {where}
             GROUP BY node_id, app_name
             ORDER BY avg_power_w DESC
+            LIMIT 1000
         """
+        
         def _q(client):
             result = client.query(query, parameters=params)
             return [
-                {"node_id": r[0], "app_name": r[1], "avg_power_w": r[2],
-                 "peak_power_w": r[3], "last_seen": r[4], "samples": r[5]}
+                {
+                    "node_id": r[0],
+                    "app_name": r[1],
+                    "avg_power_w": r[2],
+                    "peak_power_w": r[3],
+                    "last_seen": r[4],
+                    "samples": r[5]
+                }
                 for r in result.result_rows
-            ]
-        return self._execute(_q)
-
-    def get_app_energy_history(
-        self,
-        app_name: str,
-        node_id: Optional[str] = None,
-        start: Optional[datetime] = None,
-        end: Optional[datetime] = None,
-        aggregation: str = "1h",
-    ) -> list:
-        """Per-app energy over time from the ranking materialized view."""
-        conditions = ["app_name = {app_name:String}"]
-        params = {"app_name": app_name}
-        if node_id:
-            conditions.append("node_id = {node_id:String}")
-            params["node_id"] = node_id
-        if start:
-            conditions.append("hour >= {start:DateTime64(3)}")
-            params["start"] = start
-        if end:
-            conditions.append("hour <= {end:DateTime64(3)}")
-            params["end"] = end
-        where = " AND ".join(conditions)
-        query = f"""
-            SELECT hour, node_id, app_name, avg_power_w, total_power_w,
-                   avg_cpu_util, sample_count
-            FROM energy_app_ranking_mv
-            WHERE {where}
-            ORDER BY hour DESC
-            LIMIT 5000
-        """
-        def _q(client):
-            result = client.query(query, parameters=params)
-            return [
-                {"timestamp": r[0], "node_id": r[1], "app_name": r[2],
-                 "avg_power_w": r[3], "total_power_w": r[4],
-                 "avg_cpu_util": r[5], "sample_count": r[6]}
-                for r in result.result_rows
-            ]
-        return self._execute(_q)
-
-    def verify_api_key(self, api_key: str) -> Optional[str]:
-        """Returns node_id if api_key is valid, else None."""
-        def _q(client):
-            result = client.query(
-                "SELECT node_id FROM nodes WHERE api_key = {key:String}",
-                parameters={"key": api_key},
-            )
-            return result.result_rows[0][0] if result.result_rows else None
-        return self._execute(_q)
+            ] if result.result_rows else []
+        
+        try:
+            return self._execute(_q)
+        except Exception as e:
+            log.warning(f"Could not get app list: {e}")
+            return []
 
 
 # Singleton
