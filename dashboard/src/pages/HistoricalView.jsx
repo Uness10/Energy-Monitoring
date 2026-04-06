@@ -28,15 +28,19 @@ export default function HistoricalView() {
   });
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-800">Historical Analytics</h2>
-        <div className="flex items-center gap-3">
+    <div className="space-y-5">
+      <div className="panel p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        <div>
+          <h2 className="section-title">Historical Analytics</h2>
+          <p className="section-subtitle">Explore long-range behavior with adaptive aggregation.</p>
+        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <NodeSelector nodes={nodes} selected={selectedNode} onChange={setSelectedNode} />
           <TimeRangePicker selected={rangeMinutes} onChange={setRangeMinutes} />
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <KpiChart
           data={powerData?.data || []}
           dataKey={powerData?.aggregation ? "avg_value" : "value"}

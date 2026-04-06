@@ -1,0 +1,20 @@
+{
+  "clickhouse": {
+    "write": {
+      "throughput_rows_per_sec": 19248.874648231194,
+      "time_seconds": 5.195108899999468
+    },
+    "queries": {
+      "q1_simple_avg_ms": 12.995999997656327,
+      "q2_group_by_node_ms": 65.09850000293227,
+      "q3_time_range_agg_ms": 49.085300001024734
+    }
+  },
+  "influxdb": {
+    "write": {
+      "throughput_rows_per_sec": 342704.0031277608,
+      "time_seconds": 0.29179699999804143
+    },
+    "queries": {}
+  }
+}

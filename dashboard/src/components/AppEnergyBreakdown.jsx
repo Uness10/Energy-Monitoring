@@ -27,23 +27,24 @@ export default function AppEnergyBreakdown({ nodeId }) {
 
   const apps = (data?.apps || []).slice(0, 10);
 
-  if (isLoading) return <div className="h-64 bg-gray-50 rounded-lg animate-pulse" />;
+  if (isLoading) return <div className="h-64 panel animate-pulse" />;
 
   return (
-    <div className="bg-white rounded-lg shadow p-4">
-      <h4 className="text-sm font-semibold text-gray-700 mb-1">Power by Application</h4>
-      <p className="text-xs text-gray-400 mb-3">Average watts — last hour</p>
+    <div className="panel p-4 sm:p-5">
+      <h4 className="text-sm font-semibold text-[var(--ink)] mb-1">Power by Application</h4>
+      <p className="text-xs text-[var(--ink-muted)] mb-3">Average watts in the last hour.</p>
       <ResponsiveContainer width="100%" height={260}>
         <BarChart data={apps} layout="vertical" margin={{ left: 20 }}>
-          <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-          <XAxis type="number" unit=" W" tick={{ fontSize: 10 }} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(44,84,68,0.14)" horizontal={false} />
+          <XAxis type="number" unit=" W" tick={{ fontSize: 10, fill: "#5b7266" }} />
           <YAxis
             type="category"
             dataKey="app_name"
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 11, fill: "#30473c" }}
             width={90}
           />
           <Tooltip
+            contentStyle={{ borderRadius: 12, border: "1px solid rgba(44,84,68,0.15)", background: "rgba(255,255,255,0.96)" }}
             formatter={(v) => [`${v.toFixed(2)} W`, "Avg Power"]}
           />
           <Bar dataKey="avg_power_w" radius={[0, 4, 4, 0]}>

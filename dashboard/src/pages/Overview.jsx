@@ -8,30 +8,43 @@ export default function Overview() {
   const { data: nodes, isLoading } = useQuery({ queryKey: ["nodes"], queryFn: fetchNodes, refetchInterval: 10_000 });
 
   return (
-    <div>
+    <div className="space-y-6">
+      <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+        <div>
+          <h1 className="section-title">Network Overview</h1>
+          <p className="section-subtitle">Live health and energy signals across all registered nodes.</p>
+        </div>
+      </header>
+
       {summary && (
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Total Nodes", value: summary.total_nodes },
-            { label: "Online", value: summary.online, color: "text-green-600" },
-            { label: "Stale", value: summary.stale, color: "text-yellow-600" },
-            { label: "Offline", value: summary.offline, color: "text-red-600" },
+            { label: "Total Nodes", value: summary.total_nodes, tone: "text-[var(--ink)]" },
+            { label: "Online", value: summary.online, tone: "text-emerald-700" },
+            { label: "Stale", value: summary.stale, tone: "text-amber-700" },
+            { label: "Offline", value: summary.offline, tone: "text-rose-700" },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-lg shadow p-4 text-center">
-              <div className={`text-2xl font-bold ${s.color || "text-gray-800"}`}>{s.value}</div>
-              <div className="text-xs text-gray-500">{s.label}</div>
+            <div key={s.label} className="panel p-4 sm:p-5">
+              <div className="text-[11px] uppercase tracking-[0.08em] text-[var(--ink-muted)]">{s.label}</div>
+              <div className={`mt-1 text-3xl font-semibold ${s.tone}`}>{s.value}</div>
             </div>
           ))}
         </div>
       )}
 
       {isLoading ? (
-        <p className="text-gray-500">Loading nodes...</p>
+        <div className="panel p-6 text-sm text-[var(--ink-muted)]">Loading nodes...</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {(nodes || []).map((node) => (
-            <NodeCard key={node.node_id} node={node} />
-          ))}
+        <div className="panel p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-[var(--ink)]">Nodes</h2>
+            <span className="text-xs text-[var(--ink-muted)]">{(nodes || []).length} visible</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {(nodes || []).map((node) => (
+              <NodeCard key={node.node_id} node={node} />
+            ))}
+          </div>
         </div>
       )}
     </div>

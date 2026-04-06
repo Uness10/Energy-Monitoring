@@ -1,3 +1,84 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
+
+:root {
+	--bg: #f5f7f3;
+	--bg-soft: #edf3e8;
+	--surface: rgba(255, 255, 255, 0.84);
+	--surface-strong: rgba(255, 255, 255, 0.95);
+	--ink: #1f2d25;
+	--ink-muted: #587064;
+	--brand: #1f7a5c;
+	--brand-dark: #105742;
+	--line: rgba(44, 84, 68, 0.16);
+	--shadow: 0 12px 35px rgba(31, 54, 44, 0.08);
+}
+
+body {
+	margin: 0;
+	font-family: "IBM Plex Sans", sans-serif;
+	color: var(--ink);
+	background:
+		radial-gradient(circle at 8% 10%, rgba(122, 188, 163, 0.25), transparent 35%),
+		radial-gradient(circle at 85% 8%, rgba(203, 188, 126, 0.2), transparent 34%),
+		linear-gradient(160deg, var(--bg) 0%, var(--bg-soft) 46%, #f8faf7 100%);
+	min-height: 100vh;
+}
+
+#root {
+	min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+	font-family: "Space Grotesk", sans-serif;
+	letter-spacing: -0.01em;
+}
+
+@layer components {
+	.app-shell {
+		@apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+	}
+
+	.panel {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		box-shadow: var(--shadow);
+		backdrop-filter: blur(8px);
+		@apply rounded-2xl;
+	}
+
+	.panel-strong {
+		background: var(--surface-strong);
+		border: 1px solid var(--line);
+		box-shadow: var(--shadow);
+		@apply rounded-2xl;
+	}
+
+	.section-title {
+		@apply text-xl sm:text-2xl font-semibold;
+		color: var(--ink);
+	}
+
+	.section-subtitle {
+		@apply text-sm;
+		color: var(--ink-muted);
+	}
+
+	.control-select {
+		@apply rounded-xl px-3.5 py-2 text-sm border transition focus:outline-none focus:ring-2;
+		border-color: var(--line);
+		background: rgba(255, 255, 255, 0.9);
+		color: var(--ink);
+	}
+
+	.control-select:focus {
+		border-color: var(--brand);
+		box-shadow: 0 0 0 3px rgba(31, 122, 92, 0.14);
+	}
+}
