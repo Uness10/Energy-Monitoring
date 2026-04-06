@@ -1,0 +1,303 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit}
+
+\definecolor{Primary}{RGB}{16,76,129}
+\definecolor{Accent}{RGB}{10,130,103}
+\definecolor{Soft}{RGB}{242,245,248}
+\definecolor{Warn}{RGB}{180,78,46}
+
+% --- FIXED COLOR CONFIG ---
+\setbeamercolor{structure}{fg=Primary}
+
+% Frame title (FIX)
+\setbeamercolor{frametitle}{fg=white,bg=Primary}
+
+% Title page
+\setbeamercolor{title}{fg=white,bg=Primary}
+
+% Blocks
+\setbeamercolor{block title}{bg=Primary!12,fg=black}
+\setbeamercolor{block body}{bg=Soft,fg=black}
+
+% Optional: cleaner frametitle rendering
+\setbeamertemplate{frametitle}{
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.8ex,dp=1.2ex,left]{frametitle}
+    \hspace{1em}\insertframetitle
+  \end{beamercolorbox}
+}
+
+\title{Distributed Energy Monitoring System}
+\subtitle{Real-time Energy and Health Monitoring for Heterogeneous Nodes}
+\author{Energy Monitoring Project Team}
+\institute{MLab / Distributed Systems Project}
+\date{\today}
+
+\newcommand{\smallnote}[1]{\vspace{0.4em}{\scriptsize\color{gray}#1}}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Presentation Roadmap}
+  \tableofcontents
+\end{frame}
+
+\section{Context}
+
+\begin{frame}{Project Context}
+  \begin{block}{Problem}
+    Research labs use many kinds of machines, but energy usage is usually invisible.
+    Teams can see CPU load, yet they often cannot answer simple questions such as:
+    which node wastes power at idle, which application consumes most energy, and how the lab evolves over time.
+  \end{block}
+
+  \begin{block}{Our Goal}
+    Build one distributed platform that collects energy and health metrics from heterogeneous nodes,
+    stores them efficiently, and exposes them through a real-time dashboard.
+  \end{block}
+
+  \smallnote{Target environment: workstations, Raspberry Pi devices, and mobile clients.}
+\end{frame}
+
+\begin{frame}{What The System Delivers}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+      \begin{block}{Monitoring Scope}
+        \begin{itemize}
+          \item 8 system KPIs per node
+          \item Per-application energy attribution
+          \item Real-time and historical views
+          \item Multi-node status tracking
+        \end{itemize}
+      \end{block}
+    \column{0.5\textwidth}
+      \begin{block}{Engineering Goals}
+        \begin{itemize}
+          \item Low-latency reads for dashboards
+          \item Reliable ingestion during outages
+          \item Database replication for resilience
+          \item Clear API-based integration
+        \end{itemize}
+      \end{block}
+  \end{columns}
+
+  \vspace{0.4em}
+  \textbf{Core KPIs:} voltage, CPU frequency, CPU utilization, RAM utilization, temperature, power, energy, uptime.
+\end{frame}
+
+\section{Used Technologies}
+
+\begin{frame}{Used Technologies}
+  \begin{table}
+    \small
+    \begin{tabular}{>{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{3cm} >{\raggedright\arraybackslash}p{5.3cm}}
+      \toprule
+      Layer & Technology & Role \\
+      \midrule
+      Data collection & Python 3.12, psutil, RAPL, INA219 & Collect node KPIs and estimate per-application energy \\
+      Backend API & FastAPI, Pydantic, JWT & Validate payloads, expose REST endpoints, manage authentication \\
+      Database & ClickHouse, ClickHouse Keeper & Store time-series data, support replication, serve analytical queries \\
+      Frontend & React 18, Tailwind CSS, Recharts & Real-time dashboard, historical charts, node and app views \\
+      Deployment & Docker Compose, systemd & Run services consistently and deploy daemon on Linux nodes \\
+      Benchmarking & Python scripts, synthetic generators & Measure query latency and ingestion throughput \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+\begin{frame}{Why These Choices}
+  \begin{itemize}
+    \item \textbf{FastAPI} gives a clean REST layer and automatic API documentation.
+    \item \textbf{ClickHouse} fits analytical time-series workloads and supports materialized views.
+    \item \textbf{Replication} improves resilience and keeps the storage layer aligned with the project requirements.
+    \item \textbf{React + Recharts} is enough for live charts without adding unnecessary complexity.
+    \item \textbf{Python daemon} keeps collectors modular and portable across different node types.
+  \end{itemize}
+\end{frame}
+
+\section{Database Benchmark Results}
+
+\begin{frame}{Database Benchmark Results}
+  \begin{block}{Status}
+    This benchmark phase is not finalized yet.
+    The slide is prepared as a template for the final presentation.
+  \end{block}
+
+  \vspace{0.5em}
+  \begin{table}
+    \small
+    \begin{tabular}{>{\raggedright\arraybackslash}p{5.2cm} c c c c}
+      \toprule
+      Query / Database & Pgres & ClickHouse & Influx & 4th one \\
+      \midrule
+      Raw 15 min, single node & TBD & TBD & TBD & TBD \\
+      Raw 15 min, all nodes & TBD & TBD & TBD  & TBD \\
+      Aggregated 24 h, single node & TBD & TBD & TBD & TBD  \\
+      Aggregated 7 d, all nodes & TBD & TBD & TBD  & TBD  \\
+      Ingestion throughput & TBD & TBD & TBD & TBD  \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+
+  \smallnote{Planned benchmark script already exists in the repository and targets query latency plus write throughput.}
+\end{frame}
+
+\begin{frame}{Benchmark Methodology Template}
+  \begin{itemize}
+    \item Dataset source: synthetic generator for multiple nodes over fixed time windows.
+    \item Execution plan: run each query 10 times and report average latency and P95 latency.
+    \item Workloads to compare:
+      \begin{itemize}
+        \item raw queries versus aggregated queries
+        \item single-node versus all-node queries
+        \item ingestion throughput under continuous writes
+      \end{itemize}
+    \item Final goal: show that the dashboard can stay responsive while data is continuously ingested.
+  \end{itemize}
+\end{frame}
+
+\section{System Overview}
+
+\begin{frame}{System Overview}
+  \centering
+  \begin{tikzpicture}[
+    node distance=0.8cm and 1cm,
+    box/.style={draw=Primary, rounded corners, thick, fill=Soft, align=center, minimum width=2.8cm, minimum height=1.2cm},
+    arrow/.style={-{Latex[length=2.5mm]}, thick, draw=Accent}
+  ]
+    \node[box] (daemon1) {Workstation\\Daemon};
+    \node[box, below=of daemon1] (daemon2) {Raspberry Pi\\Daemon};
+    \node[box, below=of daemon2] (daemon3) {Mobile\\Client};
+    \node[box, right=2.2cm of daemon2] (backend) {FastAPI Backend\\Auth + Validation + Routing};
+    \node[box, right=2.4cm of backend] (db) {ClickHouse Cluster\\Raw + Aggregated Data};
+    \node[box, above=of db] (dash) {Web Dashboard\\React + Charts};
+
+    \draw[arrow] (daemon1.east) -- node[above,sloped]{POST metrics} (backend.west);
+    \draw[arrow] (daemon2.east) -- node[above,sloped]{POST metrics} (backend.west);
+    \draw[arrow] (daemon3.east) -- node[below,sloped]{POST metrics} (backend.west);
+    \draw[arrow] (backend.east) -- node[above]{insert / query} (db.west);
+    \draw[arrow] (dash.west) -- node[above,sloped]{GET API} (backend.north);
+  \end{tikzpicture}
+
+  \vspace{0.5em}
+  End-to-end flow: \textbf{collect} $\rightarrow$ \textbf{send} $\rightarrow$ \textbf{store} $\rightarrow$ \textbf{visualize}.
+\end{frame}
+
+\begin{frame}{Functional Overview}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+      \begin{block}{Ingestion Side}
+        \begin{itemize}
+          \item Periodic collection every 5--10 seconds
+          \item Retry buffer for temporary network failures
+          \item Node registration and API-key based ingestion
+          \item Support for system KPIs and app-level metrics
+        \end{itemize}
+      \end{block}
+    \column{0.48\textwidth}
+      \begin{block}{Visualization Side}
+        \begin{itemize}
+          \item Overview of all nodes
+          \item Real-time monitoring page
+          \item Historical analytics with aggregation
+          \item Per-node and per-application breakdown
+        \end{itemize}
+      \end{block}
+  \end{columns}
+\end{frame}
+
+\section{Architecture \& Communication Protocol}
+
+\begin{frame}{Architecture}
+  \begin{itemize}
+    \item \textbf{Edge layer:} each node runs a daemon that reads local sensors and OS metrics.
+    \item \textbf{Service layer:} the backend authenticates requests, validates payloads, updates heartbeat state, and routes reads and writes.
+    \item \textbf{Storage layer:} ClickHouse stores raw metrics and materialized views for hourly and daily aggregation.
+    \item \textbf{Presentation layer:} the dashboard queries the backend and adapts the aggregation level to the selected time range.
+  \end{itemize}
+
+  \vspace{0.4em}
+  \begin{block}{Design Logic}
+    We separate collection, API logic, storage, and visualization so each layer can evolve independently.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Communication Protocol}
+  \begin{table}
+    \small
+    \begin{tabular}{>{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}p{2cm} >{\raggedright\arraybackslash}p{2.3cm} >{\raggedright\arraybackslash}p{4.8cm}}
+      \toprule
+      Source & Method & Auth & Purpose \\
+      \midrule
+      Daemon $\rightarrow$ Backend & POST `/api/v1/metrics` & API key & Send timestamped KPI batches and optional app metrics \\
+      Dashboard $\rightarrow$ Backend & GET `/api/v1/metrics` & JWT & Read raw or filtered metrics \\
+      Dashboard $\rightarrow$ Backend & GET aggregated endpoints & JWT & Read downsampled data for long time ranges \\
+      Dashboard $\rightarrow$ Backend & GET `/api/v1/nodes`, `/summary` & JWT & Read node status and system summary \\
+      Backend $\rightarrow$ ClickHouse & Native / HTTP client & DB credentials & Insert records and execute analytical queries \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+\begin{frame}{Data Model and Reliability}
+  \begin{columns}[T]
+    \column{0.52\textwidth}
+      \begin{block}{Data Model}
+        Each record is centered on:
+        \begin{itemize}
+          \item timestamp
+          \item node\_id
+          \item app\_name
+          \item metric
+          \item value
+        \end{itemize}
+        This structure is simple for ingestion and efficient for analytical queries.
+      \end{block}
+    \column{0.44\textwidth}
+      \begin{block}{Reliability Features}
+        \begin{itemize}
+          \item replicated ClickHouse setup
+          \item file-backed retry buffer
+          \item adaptive heartbeat tracking
+          \item materialized views for faster reads
+        \end{itemize}
+      \end{block}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Example Request Flow}
+  \begin{enumerate}
+    \item The daemon collects system metrics and app-level energy data.
+    \item It sends a JSON payload to the backend with its API key.
+    \item The backend validates the payload and stores rows in ClickHouse.
+    \item Materialized views prepare hourly and daily aggregates.
+    \item The dashboard requests either raw or aggregated data depending on the selected time range.
+  \end{enumerate}
+\end{frame}
+
+
+
+\begin{frame}
+  \centering
+  {\Large Thank you}
+
+  \vspace{0.6em}
+  Questions?
+\end{frame}
+
+\end{document}
